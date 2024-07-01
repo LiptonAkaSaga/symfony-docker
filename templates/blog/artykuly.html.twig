@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="styles/style.css" rel="stylesheet" />
+
+</head>
+<body>
+<h1>Artykuł</h1>
+<div class="article-content">
+    <span><b>ID:</b>{{ articles.id }}</span><br>
+    <span><b>Title:</b>{{ articles.title }}<br></span>
+    <span><b>Content:</b>{{ articles.content }}<br></span>
+    <span><b>Date:</b>{{ articles.date }}</span>
+    <br><br>
+    <button type="button" class="btn btn-primary" onclick="window.location.href='{{ path('main_page') }}'">back</button>
+    <button type="button" onclick="editArticle()">Edit article</button>
+    <script>
+        function editArticle(){
+            window.location.href = "{{ path('edit_article', {'id': articles.id}) }}";
+        }
+    </script>
+</div><br></br>
+</body>
+</html>

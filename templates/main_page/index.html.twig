@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello MainPageController!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h1>Last article</h1>
+
+    {{ lastArticle.id }}
+    {{ lastArticle.title }}
+    {{ lastArticle.content | slice(0, 30) }}
+
+
+
+    <ul>
+        <li>Your controller at <code>/app/src/Controller/MainPageController.php</code></li>
+        <li>Your template at <code>/app/templates/main_page/index.html.twig</code></li>
+    </ul>
+</div>
+{% endblock %}

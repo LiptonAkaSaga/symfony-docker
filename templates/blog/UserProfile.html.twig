@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+        Artykuły
+    </title>
+</head>
+<body>
+<h1>
+    Artykuły
+</h1>
+<div>
+    {%extends 'base.html.twig' %}
+
+
+    {%block title %} {{title}} {%endblock%}
+
+
+    {%block body %}
+
+        <h1>User</h1>
+        <table>
+
+
+            <tr>
+                <td><p>{{user.id}}</p></td>
+                <td>{{user.name}}</td>
+
+            </tr>
+
+        </table>
+
+    {%endblock%}
+</div>
+
+</body>
+</html>
