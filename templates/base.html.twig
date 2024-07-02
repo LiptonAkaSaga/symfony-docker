@@ -31,6 +31,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_about_me') }}">O mnie</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_contact') }}">Kontakt</a>
+                    </li>
                 </ul>
                 <form class="d-flex" action="{{ path('search_articles', {'search_slug': 'query'}) }}" method="GET">
                     <input class="form-control me-2" type="search" placeholder="Szukaj artykułów..." name="query" aria-label="Search">
