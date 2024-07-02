@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block body %}
+    <h1>{{ article.title }}</h1>
+        {% if article.id % 2 == 0 %}
+            <span style="background-color: green;"> ID: {{ article.id }}</span>
+        {% else %}
+            <span style="background-color: red;">ID: {{ article.id }}</span>
+        {% endif %}
+
+    <p>{{ article.content }}</p>
+    <p>Date added: {{ article.dateAdded|date('Y-m-d H:i:s') }}</p>
+    <a href="{{ path('article_list') }}" class="btn btn-secondary">Powrót do listy</a>
+{% endblock %}

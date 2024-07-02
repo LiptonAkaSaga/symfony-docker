@@ -21,7 +21,7 @@ $article->setContent('Article 1 content');
 $manager->persist($article);
         $article = new Article();
         $article->setTitle('Article 2');
-        $article->setContent('Article 2 content');
+        $article->setContent('Article 2 content is quite short and lazy article but it is still an article so it is fine. It is not a long article but it is still an article. ');
         $article->setDateAdded(new \DateTime('now'));
 $manager->persist($article);
         $article = new Article();

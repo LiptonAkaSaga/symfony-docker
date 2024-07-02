@@ -13,103 +13,82 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 
 class BlogController extends AbstractController
 {
-    private ArticleRepository $articleRepository; // Zmienne klasy powinny być deklarowane
-    private ArticleProvider $articleProvider;     // Także tutaj
-    private FormFactoryInterface $formFactory;    // Dodaj tę deklarację
+    private ArticleProvider $articleProvider;
 
-    public function __construct(
-        ArticleRepository $articleRepository,
-        ArticleProvider $articleProvider,
-        FormFactoryInterface $formFactory // Dodanie do konstruktora
-    ) {
-        $this->articleRepository = $articleRepository; // Inicjalizacja
-        $this->articleProvider = $articleProvider;     // Inicjalizacja
-        $this->formFactory = $formFactory;             // Inicjalizacja
+    public function __construct(ArticleProvider $articleProvider)
+    {
+        $this->articleProvider = $articleProvider;
     }
 
-    #[Route('/new', name: 'new_page')]
-    public function new(EntityManagerInterface $em, Request $request)
+    #[Route('/article/new', name: 'article_new')]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->formFactory->create(ArticleFormType::class);
-
+        $article = new Article();
+        $form = $this->createForm(ArticleFormType::class, $article);
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
-            $article = $form->getData();
+            $entityManager->persist($article);
+            $entityManager->flush();
 
-            $em->persist($article);
-            $em->flush();
-
-            $this->addFlash('success', 'Article created!');
-            return $this->redirectToRoute('main_page');
-        }
-
-    return $this->render('blog/new.html.twig', [
-        'articleForm' => $form->createView()
-    ]);
-    }
-    #[Route('/edit/{id}', name: 'edit_article')]
-    public function edit(Article $article, Request $request, EntityManagerInterface $em)
-    {
-        $form = $this->formFactory->create(ArticleFormType::class);
-
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em->persist($article);
-            $em->flush();
-
-            $this->addFlash('success', 'Article Updated');
-
-            return $this->redirectToRoute('article', [
-                'id' => $article->getId(),
-            ]);
+            return $this->redirectToRoute('article_list');
         }
 
         return $this->render('blog/new.html.twig', [
-            'articleForm' => $form->createView()
+            'form' => $form->createView(),
         ]);
     }
 
 
-    #[Route('/main', name: 'main_page')]
-    public function list(ArticleRepository $articleRepo, ArticleProvider $articleProvider): Response
-    {
-        $articles = $articleRepo->findAll();
-        $transformedArticles = $articleProvider->transformDataForTwig($articles);
 
-        return $this->render('blog/main.html.twig', ['articles' => $transformedArticles['articles'],
+    #[Route('/articles', name: 'article_list')]
+    public function list(ArticleRepository $articleRepository): Response
+    {
+        $articles = $articleRepository->findAllOrderedByNewest();
+        $transformedArticles = $this->articleProvider->transformDataForTwig($articles);
+
+        return $this->render('blog/list.html.twig', [
+            'articles' => $transformedArticles,
         ]);
     }
 
-    #[Route('/delete/{id}', name: 'delete_article')]
-    public function deleteArticle($id, EntityManagerInterface $em)
+    #[Route('/article/edit/{id}', name: 'article_edit')]
+    public function edit(Request $request, Article $article, EntityManagerInterface $entityManager): Response
     {
-        $article = $em->getRepository(Article::class)->find($id);
-        if (!$article) {
-            throw $this->createNotFoundException('Article not found');
+        $form = $this->createForm(ArticleFormType::class, $article);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+            return $this->redirectToRoute('article_list');
         }
 
-        $em->remove($article);
-        $em->flush();
-
-        $this->addFlash('success', 'Article deleted successfully');
-
-        return $this->redirectToRoute('main_page');
+        return $this->render('blog/edit.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 
-    #[Route('/artykuly/{id}', name: 'article')]
-    public function showArticle($id):Response
+    #[Route('/article/delete/{id}', name: 'article_delete')]
+    public function delete(Article $article, EntityManagerInterface $entityManager): Response
     {
-        $article = $this->articleRepository->find($id);
-if(!$article){
-    throw new NotFoundHttpException('Artykul nie zostal znaleziony');
-}
-$transformedArticles = $this->articleProvider->transformSingleArticleForTwig($article);
-        return $this->render('blog/artykuly.html.twig',['articles' => $transformedArticles]);
+        $entityManager->remove($article);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('article_list');
+    }
+
+    #[Route('/article/{id}', name: 'article_show')]
+    public function show(Article $article): Response
+    {
+        $transformedArticle = $this->articleProvider->transformSingleArticleForTwig($article, false);
+
+        return $this->render('blog/show.html.twig', [
+            'article' => $transformedArticle,
+        ]);
     }
 }

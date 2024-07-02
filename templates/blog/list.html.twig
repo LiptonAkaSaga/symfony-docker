@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Lista artykułów{% endblock %}
+
+{% block body %}
+    <h1>Lista artykułów</h1>
+
+    <a href="{{ path('article_new') }}" class="btn btn-success mb-3">Dodaj nowy artykuł</a>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Tytuł</th>
+            <th>Treść</th>
+            <th>Akcje</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for article in articles %}
+            <tr>
+                <td>
+                    <a href="{{ path('article_show', {'id': article.id}) }}">
+                        {{ article.title }}
+                    </a>
+                </td>
+                <td>
+                    {{ article.content }}
+                </td>
+                <td>
+                    <a href="{{ path('article_edit', {'id': article.id}) }}" class="btn btn-primary">Edytuj</a>
+                    <a href="{{ path('article_delete', {'id': article.id}) }}" class="btn btn-danger" onclick="return confirm('Czy na pewno chcesz usunąć ten artykuł?')">Usuń</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
