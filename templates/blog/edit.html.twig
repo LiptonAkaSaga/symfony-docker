@@ -3,10 +3,43 @@
 {% block title %}Edytuj artykuł{% endblock %}
 
 {% block body %}
-    <h1>Edytuj artykuł</h1>
-    {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button type="submit" class="btn btn-primary">Zapisz zmiany</button>
-    {{ form_end(form) }}
-    <a href="{{ path('article_list') }}" class="btn btn-secondary">Anuluj</a>
+    <div class="container mt-4">
+        <h1>Edytuj artykuł</h1>
+
+        {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+
+        <div class="mb-3">
+            {{ form_label(form.title) }}
+            {{ form_widget(form.title) }}
+            {{ form_errors(form.title) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.content) }}
+            {{ form_widget(form.content) }}
+            {{ form_errors(form.content) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.images) }}
+            {{ form_widget(form.images) }}
+            {{ form_errors(form.images) }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Zapisz zmiany</button>
+
+        {{ form_end(form) }}
+
+        <h2 class="mt-4">Obecne obrazki</h2>
+        <div class="row">
+            {% for image in article.images %}
+                <div class="col-md-4 mb-3">
+                    <img src="{{ asset(image.path) }}" class="img-fluid" alt="{{ image.alt }}">
+                    <p>{{ image.title }}</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        <a href="{{ path('article_list') }}" class="btn btn-secondary mt-3">Anuluj</a>
+    </div>
 {% endblock %}

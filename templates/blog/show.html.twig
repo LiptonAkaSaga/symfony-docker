@@ -12,5 +12,16 @@
 
     <p>{{ article.content }}</p>
     <p>Date added: {{ article.dateAdded|date('Y-m-d H:i:s') }}</p>
+
+    <h2>Obrazki</h2>
+    <div class="row">
+        {% for image in article.images %}
+            <div class="col-md-4 mb-3">
+                <img src="{{ asset(image.path) }}" class="img-fluid" alt="{{ image.alt }}">
+                <p>{{ image.title }}</p>
+            </div>
+        {% endfor %}
+    </div>
+
     <a href="{{ path('article_list') }}" class="btn btn-secondary">Powrót do listy</a>
 {% endblock %}

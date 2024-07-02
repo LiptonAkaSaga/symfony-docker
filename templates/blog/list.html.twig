@@ -7,31 +7,25 @@
 
     <a href="{{ path('article_new') }}" class="btn btn-success mb-3">Dodaj nowy artykuł</a>
 
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Tytuł</th>
-            <th>Treść</th>
-            <th>Akcje</th>
-        </tr>
-        </thead>
-        <tbody>
+    <div class="row">
         {% for article in articles %}
-            <tr>
-                <td>
-                    <a href="{{ path('article_show', {'id': article.id}) }}">
-                        {{ article.title }}
-                    </a>
-                </td>
-                <td>
-                    {{ article.content }}
-                </td>
-                <td>
-                    <a href="{{ path('article_edit', {'id': article.id}) }}" class="btn btn-primary">Edytuj</a>
-                    <a href="{{ path('article_delete', {'id': article.id}) }}" class="btn btn-danger" onclick="return confirm('Czy na pewno chcesz usunąć ten artykuł?')">Usuń</a>
-                </td>
-            </tr>
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    {% if article.images|length > 0 %}
+                        <img src="{{ asset(article.images|first.path) }}" class="card-img-top" alt="{{ article.images|first.alt }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="{{ path('article_show', {'id': article.id}) }}">
+                                {{ article.title }}
+                            </a>
+                        </h5>
+                        <p class="card-text">{{ article.content|slice(0, 100) }}...</p>
+                        <a href="{{ path('article_edit', {'id': article.id}) }}" class="btn btn-primary">Edytuj</a>
+                        <a href="{{ path('article_delete', {'id': article.id}) }}" class="btn btn-danger" onclick="return confirm('Czy na pewno chcesz usunąć ten artykuł?')">Usuń</a>
+                    </div>
+                </div>
+            </div>
         {% endfor %}
-        </tbody>
-    </table>
+    </div>
 {% endblock %}
