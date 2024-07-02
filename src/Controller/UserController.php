@@ -23,7 +23,7 @@ class UserController extends AbstractController
     public function userShow(UserInterface $user): JsonResponse
     {
         $userData = [
-            'username' => $user->getUsername(),
+            'email' => $user->getEmail(),
             'roles' => $user->getRoles(),
         ];
 

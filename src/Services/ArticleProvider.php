@@ -28,15 +28,6 @@ class ArticleProvider
         ];
     }
 
-    public function prepareNewArticleData(): array
-    {
-        return [
-            'title' => '',
-            'content' => '',
-            'images' => []
-        ];
-    }
-
     private function truncateContent(string $content, int $length = 150): string
     {
         if (strlen($content) <= $length) {
