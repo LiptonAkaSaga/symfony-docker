@@ -18,7 +18,7 @@ class MainPageController extends AbstractController
     {
         $lastArticle = $this->articleRepository->getLastArticle();
         return $this->render('main_page/index.html.twig', [
-            'controller_name' => 'MainPageController', 'lastArticle' => $lastArticle
+            'lastArticle' => $lastArticle
         ]);
     }
 }

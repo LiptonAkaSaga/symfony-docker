@@ -10,7 +10,6 @@ use App\Repository\ArticleRepository;
 use App\Services\ArticleProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -89,6 +88,18 @@ class BlogController extends AbstractController
 
         return $this->render('blog/show.html.twig', [
             'article' => $transformedArticle,
+        ]);
+    }
+
+    #[Route('/search/{search_slug}', name: 'search_articles')]
+    public function search(string $search_slug, Request $request, ArticleRepository $articleRepository): Response
+    {
+        $query = $request->query->get('query', $search_slug);
+        $articles = $articleRepository->searchByTitle($query);
+
+        return $this->render('blog/search_result.html.twig', [
+            'articles' => $this->articleProvider->transformDataForTwig($articles),
+            'query' => $query
         ]);
     }
 }

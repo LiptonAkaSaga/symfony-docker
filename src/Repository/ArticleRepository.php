@@ -46,4 +46,13 @@ class ArticleRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+    public function searchByTitle(string $query)
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('LOWER(a.title) LIKE LOWER(:query)')
+            ->setParameter('query', '%'.strtolower($query).'%')
+            ->orderBy('a.dateAdded', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }
