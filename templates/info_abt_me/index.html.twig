@@ -3,27 +3,92 @@
 {% block title %}My Page{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-    .info-table { border-collapse: collapse; width: 100%; }
-    .info-table th, .info-table td { border: 1px solid #ddd; padding: 8px; }
-</style>
+    <h1>O mnie</h1>
 
-<div class="example-wrapper">
-    <h1>Hello! ✅</h1>
-    <br>A few facts about me:<br>
-    <br>
-    <table class="info-table">
-        {%  for info in aboutMeInfo %}
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('warning') %}
+        <div class="alert alert-warning">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <p>Łączna liczba informacji: {{ totalEntries }}</p>
+
+    <a href="{{ path('app_about_me_new') }}" class="btn btn-primary mb-3">Dodaj nową informację</a>
+
+    <form action="{{ path('app_about_me_delete_multiple') }}" method="post" id="delete-multiple-form">
+        <table class="table">
+            <thead>
             <tr>
-                <th><strong>{{ info.key }}:</strong></th>
-                <td>{{ info.value }}</td>
+                <th><input type="checkbox" id="select-all"></th>
+                <th>Klucz</th>
+                <th>Wartość</th>
+                <th>Akcje</th>
             </tr>
-        {% endfor %}
-    </table>
+            </thead>
+            <tbody>
+            {% for info in aboutMeInfo %}
+                <tr>
+                    <td><input type="checkbox" name="delete_ids[]" value="{{ info.id }}" class="delete-checkbox"></td>
+                    <td>{{ info.infoKey }}</td>
+                    <td>{{ info.value }}</td>
+                    <td>
+                        <a href="{{ info.editLink }}" class="btn btn-sm btn-primary">Edytuj</a>
+                        <form method="post" action="{{ info.deleteLink }}" style="display: inline-block" onsubmit="return confirm('Czy na pewno chcesz usunąć tę informację?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ info.id) }}">
+                            <button type="submit" class="btn btn-sm btn-danger">Usuń</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4">Brak informacji do wyświetlenia.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-danger" id="delete-selected">Usuń zaznaczone</button>
+    </form>
+{% endblock %}
 
-    <br><button type="submit" class="btn btn-primary">Edit</button>
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var selectAllCheckbox = document.getElementById('select-all');
+            var deleteCheckboxes = document.getElementsByClassName('delete-checkbox');
 
-</div>
+            selectAllCheckbox.addEventListener('change', function() {
+                for (var i = 0; i < deleteCheckboxes.length; i++) {
+                    deleteCheckboxes[i].checked = this.checked;
+                }
+            });
+
+            document.getElementById('delete-selected').addEventListener('click', function(event) {
+                event.preventDefault();
+                var checkedBoxes = document.querySelectorAll('.delete-checkbox:checked');
+                if (checkedBoxes.length > 0) {
+                    if (confirm('Czy na pewno chcesz usunąć zaznaczone informacje?')) {
+                        document.getElementById('delete-multiple-form').submit();
+                    }
+                } else {
+                    alert('Proszę zaznaczyć przynajmniej jedną informację do usunięcia.');
+                }
+            });
+
+            // Aktualizacja stanu "select-all" checkbox
+            for (var i = 0; i < deleteCheckboxes.length; i++) {
+                deleteCheckboxes[i].addEventListener('change', function() {
+                    selectAllCheckbox.checked = Array.from(deleteCheckboxes).every(function(checkbox) {
+                        return checkbox.checked;
+                    });
+                });
+            }
+        });
+    </script>
 {% endblock %}

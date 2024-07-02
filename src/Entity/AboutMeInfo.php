@@ -14,7 +14,7 @@ class AboutMeInfo
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
-    private ?string $Key = null;
+    private ?string $infoKey = null;
 
     #[ORM\Column(length: 300)]
     private ?string $value = null;
@@ -24,14 +24,14 @@ class AboutMeInfo
         return $this->id;
     }
 
-    public function getKey(): ?string
+    public function getInfoKey(): ?string
     {
-        return $this->Key;
+        return $this->infoKey;
     }
 
-    public function setKey(string $Key): static
+    public function setInfoKey(string $infoKey): static
     {
-        $this->Key = $Key;
+        $this->infoKey = $infoKey;
 
         return $this;
     }

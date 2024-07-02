@@ -6,14 +6,6 @@ use App\Entity\AboutMeInfo;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<AboutMeInfo>
- *
- * @method AboutMeInfo|null find($id, $lockMode = null, $lockVersion = null)
- * @method AboutMeInfo|null findOneBy(array $criteria, array $orderBy = null)
- * @method AboutMeInfo[]    findAll()
- * @method AboutMeInfo[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- */
 class AboutMeInfoRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -21,28 +13,38 @@ class AboutMeInfoRepository extends ServiceEntityRepository
         parent::__construct($registry, AboutMeInfo::class);
     }
 
-    //    /**
-    //     * @return AboutMeInfo[] Returns an array of AboutMeInfo objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('a')
-    //            ->andWhere('a.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('a.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findAllSorted()
+    {
+        return $this->createQueryBuilder('a')
+            ->orderBy('a.infoKey', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 
-    //    public function findOneBySomeField($value): ?AboutMeInfo
-    //    {
-    //        return $this->createQueryBuilder('a')
-    //            ->andWhere('a.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function findByInfoKey(string $infoKey)
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.infoKey = :infoKey')
+            ->setParameter('infoKey', $infoKey)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function countEntries()
+    {
+        return $this->createQueryBuilder('a')
+            ->select('COUNT(a.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function deleteMultiple(array $ids): int
+    {
+        return $this->createQueryBuilder('a')
+            ->delete()
+            ->where('a.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->execute();
+    }
 }
