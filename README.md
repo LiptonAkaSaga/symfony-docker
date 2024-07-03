@@ -1,51 +1,100 @@
-# Symfony Docker
+# Symfony Blog Project
 
-A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework,
-with [FrankenPHP](https://frankenphp.dev) and [Caddy](https://caddyserver.com/) inside!
+To jest instrukcja instalacji, konfiguracji i uruchomienia projektu bloga opartego na Symfony 7, z naciskiem na wykorzystanie Dockera.
 
-![CI](https://github.com/dunglas/symfony-docker/workflows/CI/badge.svg)
+## Wymagania wstępne
 
-## Getting Started
+- Docker
+- Docker Compose
+- Git
 
-1. If not already done, [install Docker Compose](https://docs.docker.com/compose/install/) (v2.10+)
-2. Run `docker compose build --no-cache` to build fresh images
-3. Run `docker compose up --pull always -d --wait` to start the project
-4. Open `https://localhost` in your favorite web browser and [accept the auto-generated TLS certificate](https://stackoverflow.com/a/15076602/1352334)
-5. Run `docker compose down --remove-orphans` to stop the Docker containers.
+## Instalacja i uruchomienie
 
-## Features
+### 1. Klonowanie repozytorium
 
-* Production, development and CI ready
-* Just 1 service by default
-* Blazing-fast performance thanks to [the worker mode of FrankenPHP](https://github.com/dunglas/frankenphp/blob/main/docs/worker.md) (automatically enabled in prod mode)
-* [Installation of extra Docker Compose services](docs/extra-services.md) with Symfony Flex
-* Automatic HTTPS (in dev and prod)
-* HTTP/3 and [Early Hints](https://symfony.com/blog/new-in-symfony-6-3-early-hints) support
-* Real-time messaging thanks to a built-in [Mercure hub](https://symfony.com/doc/current/mercure.html)
-* [Vulcain](https://vulcain.rocks) support
-* Native [XDebug](docs/xdebug.md) integration
-* Super-readable configuration
+```bash
+git clone <adres-repozytorium>
+cd <katalog-projektu>
+```
 
-**Enjoy!**
+### 2. Odapalanie środowiska
 
-## Docs
+1.W katalogu głównym projektu, zbuduj i uruchom kontenery w terminalu
+```
+docker-compose up --pull always -d --wait
+```
+2. Po zbudowaniu się kontenerów wpisz w terminalu
+```
+docker ps
+```
+   powinieneś zobaczyć coś takiego
+   
+![image](https://github.com/LiptonAkaSaga/symfony-docker/assets/137857453/65869220-b4da-4591-a780-dddaa0302745)
 
-1. [Options available](docs/options.md)
-2. [Using Symfony Docker with an existing project](docs/existing-project.md)
-3. [Support for extra services](docs/extra-services.md)
-4. [Deploying in production](docs/production.md)
-5. [Debugging with Xdebug](docs/xdebug.md)
-6. [TLS Certificates](docs/tls.md)
-7. [Using MySQL instead of PostgreSQL](docs/mysql.md)
-8. [Using Alpine Linux instead of Debian](docs/alpine.md)
-9. [Using a Makefile](docs/makefile.md)
-10. [Updating the template](docs/updating.md)
-11. [Troubleshooting](docs/troubleshooting.md)
+3. Wejdź do basha następującą komendą 
+```
+docker exec -it symfony-docker-php-1 bash
+```
+4. zrób upgrade composera
+```
+composer upgrade
+```
+5. Wykonaj migracje bazy danych
+```
+bin/console doctrine:migrations:migrate  
+```
+6. Załaduj Fixtury
+```
+bin/console doctrine:fixtures:load 
+```
+## Dostęp do aplikacji
 
-## License
+Po wykonaniu powyższych kroków, aplikacja powinna być dostępna pod adresem `http://localhost`.
 
-Symfony Docker is available under the MIT License.
 
-## Credits
+## Konfiguracja Gmail SMTP
 
-Created by [Kévin Dunglas](https://dunglas.dev), co-maintained by [Maxime Helias](https://twitter.com/maxhelias) and sponsored by [Les-Tilleuls.coop](https://les-tilleuls.coop).
+1. W pliku `.env.local` dodaj lub zmodyfikuj następującą zmienną:
+   ```
+   MAILER_DSN=gmail://TWÓJ_EMAIL:TWOJE_HASŁO_APLIKACJI@default
+   ```
+
+2. Zastąp `TWÓJ_EMAIL` swoim adresem Gmail, a `TWOJE_HASŁO_APLIKACJI` hasłem aplikacji wygenerowanym w ustawieniach bezpieczeństwa konta Google.
+
+3. Aby wygenerować hasło aplikacji:
+   - Przejdź do ustawień konta Google
+   - Wybierz "Bezpieczeństwo"
+   - Włącz weryfikację dwuetapową (jeśli nie jest włączona)
+   - W sekcji "Hasła do aplikacji" wygeneruj nowe hasło dla swojej aplikacji
+     
+## Tworzenie użytkownika
+
+Aby utworzyć nowego użytkownika w bashu, użyj poniższej komendy: 
+
+```bash
+bin/console app:create-user email@example.com hasło
+```
+
+## Uruchamianie testów
+
+Aby uruchomić testy w środowisku Docker:
+
+```bash
+./vendor/bin/phpunit
+```
+
+## Zatrzymywanie i czyszczenie
+
+Aby zatrzymać kontenery:
+
+```bash
+docker compose down --remove-orphan
+```
+
+## Dodatkowe informacje
+
+- Projekt używa PostgreSQL jako bazy danych.
+- JWT jest używane do uwierzytelniania API.
+- Formularz kontaktowy wysyła e-maile za pomocą SMTP Gmail.
+
+W razie dalszych pytań lub problemów, proszę o kontakt lub utworzenie nowego issue w repozytorium projektu.
