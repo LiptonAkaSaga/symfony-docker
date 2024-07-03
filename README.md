@@ -88,7 +88,7 @@ Aby uruchomić testy w środowisku Docker:
 Aby zatrzymać kontenery:
 
 ```bash
-docker compose down --remove-orphan
+docker compose down --remove-orphans
 ```
 
 ## Dodatkowe informacje
